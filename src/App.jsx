@@ -46,15 +46,22 @@ const App = () => {
       let updatedData=[], halfDataCount = dataCount/2;
 
       if (halfDataCount>maxTargetStrike.length) {
-        updatedData = [...maxTargetStrike, ...minTargetStrike.slice(0, dataCount-maxTargetStrike.length)];
+        updatedData = [...minTargetStrike.slice(0, dataCount-maxTargetStrike.length).toReversed(), ...maxTargetStrike];
       } else if (halfDataCount>minTargetStrike.length) {
-        updatedData = [...maxTargetStrike.slice(0, dataCount-minTargetStrike.length), ...minTargetStrike];
+        updatedData = [...minTargetStrike.toReversed(), ...maxTargetStrike.slice(0, dataCount-minTargetStrike.length)];
       } else {
-        updatedData = [...maxTargetStrike.slice(0,halfDataCount), ...minTargetStrike.slice(0,halfDataCount)];
+        updatedData = [...minTargetStrike.slice(0,halfDataCount).toReversed(), ...maxTargetStrike.slice(0,halfDataCount), ];
       }
-      
+
+      let newData = [], requiredData = JSON.parse(JSON.stringify(updatedData));
+      for (let i=0; i<requiredData.length; i+=2) {
+        requiredData[i].subRows = [requiredData[i+1]];
+        newData.push(requiredData[i]);
+      }
+      setData(newData);
+
       // setData(actualData.slice(0,dataCount));
-      setData(updatedData);
+      
     }
   }, [dataCount, actualData]);
 

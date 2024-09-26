@@ -8,7 +8,7 @@ const Table = ({ data, maxSigma }) => {
     if (!data || !data.length) 
       return [];
     return (
-      Object.keys(data[0]).map(item => {
+      Object.keys(data[0]).filter(e => e!=='subRows').map(item => {
         let option = {
           accessorKey: item,
           header: item.replaceAll('_', ' ').replace('percent', '%'),
@@ -17,7 +17,7 @@ const Table = ({ data, maxSigma }) => {
           minSize: 50, 
           size: 100,
           Cell: ({ cell }) => (
-            <div className='p-1'>
+            <div className='p-2'>
               {cell.getValue().toFixed(2)}
             </div>
           ),
@@ -29,7 +29,7 @@ const Table = ({ data, maxSigma }) => {
           option.Cell = ({ cell }) => {
             let value = cell.getValue().toFixed(2);
             return (
-              <div className={cn("m-0 size-full p-1", value<0 ? 'bg-[#FFFBD6]' : 'bg-[#FFE0B1]')} >
+              <div className={cn("m-0 size-full p-2 text-black", value<0 ? 'bg-[#FFFBD6]' : 'bg-[#FFE0B1]')} >
                 { value }
               </div>
             );
@@ -56,7 +56,7 @@ const Table = ({ data, maxSigma }) => {
             else 
               color = "rgb(166, 245, 188)";
             return (
-              <div style={{backgroundColor: "transparent", background: `linear-gradient(to right, ${color} ${value}%, transparent ${value}%)`}} className='p-1'>
+              <div style={{color: "black", background: `linear-gradient(to right, ${color} ${value}%, white ${value}%)`}} className='p-2'>
                 { cell.getValue().toFixed(2) }
               </div>
             );
@@ -79,6 +79,9 @@ const Table = ({ data, maxSigma }) => {
     enableDensityToggle: false,
     enableHiding: false,
     enableFullScreenToggle: false,
+
+    enableExpanding: true,
+    getSubRows: (originalRow) => originalRow.subRows,
 
     muiTableContainerProps: {
       sx: {
@@ -105,9 +108,6 @@ const Table = ({ data, maxSigma }) => {
       sx: {
         overflowY: 'auto', 
         flexGrow: 1,
-        '& tr:nth-of-type(even) > td': {
-          backgroundColor: '#EFEFEF',
-        },
         "& th": {
           width: "100px",
         },
@@ -138,7 +138,7 @@ const Table = ({ data, maxSigma }) => {
           transition: "none !important",         
         },
         "& span": {
-          color: "white !important",           
+          color: "white",           
         },
         "& .MuiButtonBase-root path": {
           color: "white",           
@@ -174,13 +174,34 @@ const Table = ({ data, maxSigma }) => {
         textAlign: "right",
         fontSize: "13px",
         fontWeight: "bold",
-        color: "#000000DE",
         width: "10px",
         "& .Mui-TableHeadCell-Content": {
           alignItems: "center",
         }
       },
     },
+    muiTableBodyRowProps: ({row}) => {
+      if (row.depth>0)
+        return ({
+          sx: {
+            backgroundColor: "#bde0fe",
+          }
+        });
+      else 
+        return ({
+          sx: {
+            backgroundColor: "#1538da",
+            "& .MuiTableCell-root": {
+              color: "white"
+            },
+          }
+        })
+    },
+    muiExpandButtonProps: () => ({
+      sx: {
+        color: "white"
+      }
+    }),
 
     renderTopToolbar: ({ table }) => (
       <div className=' my-3 flex justify-between'>
